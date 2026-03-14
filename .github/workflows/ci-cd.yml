@@ -53,4 +53,5 @@ jobs:
       - name: Trigger Render deployment
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_URL }}  # Trigger Render deploy
-          echo "Triggered Render deployment"            
+          echo "Triggered Render deployment" 
+          
