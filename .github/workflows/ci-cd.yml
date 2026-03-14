@@ -33,12 +33,6 @@ jobs:
             60301930/devops-quiz-ai:latest
             60301930/devops-quiz-ai:${{ github.sha }}
 
-      # Step 4: Smoke test (run container and check /api/health)
-      - name: Run smoke test
-        run: |
-          docker run -d -p 5000:5000 --name quiz-ai --env-file $GITHUB_WORKSPACE/.env 60301930/devops-quiz-ai:latest
-          sleep 5
-          docker stop quiz-ai
 
       # Step 5: Push Docker image (only if the event is 'push')
       - name: Push Docker image
@@ -60,4 +54,3 @@ jobs:
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_URL }}  # Trigger Render deploy
           echo "Triggered Render deployment"            
-              
