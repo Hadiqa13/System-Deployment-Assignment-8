@@ -21,16 +21,17 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: 60301930   # Directly using your Docker Hub username
-          password: ${{ secrets.DOCKERHUB_TOKEN }}  # Docker Hub token stored in GitHub Secrets
+          username: ${{ secrets.DOCKERHUB_USERNAME }}   # Using Docker Hub username from secrets
+          password: ${{ secrets.DOCKERHUB_TOKEN }}      # Using Docker Hub token from secrets
 
       # Step 3: Build Docker image (no push yet)
       - name: Build Docker image (no push)
         uses: docker/build-push-action@v5
         with:
           push: false
-          tags: 60301930/devops-quiz-ai:latest
-          tags: 60301930/devops-quiz-ai:${{ github.sha }}
+          tags: |
+            60301930/devops-quiz-ai:latest
+            60301930/devops-quiz-ai:${{ github.sha }}
 
       # Step 4: Smoke test (run container and check /api/health)
       - name: Run smoke test
@@ -46,5 +47,16 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: 60301930/devops-quiz-ai:latest
-          tags: 60301930/devops-quiz-ai:${{ github.sha }}
+          tags: |
+            60301930/devops-quiz-ai:latest
+            60301930/devops-quiz-ai:${{ github.sha }}
+
+  # Job 2: Deploy to Render (only on push)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-test-push
+    if: github.event_name == 'push'
+    steps:
+      - name: Trigger Render deployment
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_URL }}   # Trigger Render deploy
